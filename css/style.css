@@ -233,7 +233,27 @@ main {
     overflow-y: scroll;
     -ms-overflow-style: none; 
     text-overflow: ellipsis;
+    position: relative;
 }
+
+.input-filter {
+    width: 160px;
+    height: 36px;
+    border: solid 1px #C6C6C6;
+    margin: 10px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: gray;
+}
+
+.dropdown-search-icon {
+    position: absolute;
+    top: 18px;
+    right: 5px;
+    color: #C6C6C6;
+}
+
 
 .dropdown-content ul {
     margin: 0;
