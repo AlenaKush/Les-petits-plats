@@ -13,7 +13,7 @@
       <img class="header_background" src="assets/img_header.png" alt="Photo d'un plat"/>
       <h1 class="header_title">CHERCHEZ PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN,SIMPLES ET DÉLICIEUSES</h1>
       <div class="header_serch_bar">
-        <input type="search" name="search" placeholder="Rechercher une recette, un ingrédient, ...">
+        <input id="input_field" type="search" name="search" placeholder="Rechercher une recette, un ingrédient, ...">
         <button class="search_button">
           <span id="search-icon" class="material-symbols-outlined">search</span>
         </button>
@@ -58,12 +58,10 @@
         </div>
         <div id="number_recipes"></div>
       </div>
-      <div class="recipes_section"></div>
+      <div id="recipes_section" class="recipes_section"></div>
     </main>
     <script type="module" src="scripts/init.js"></script>
-    <script type="module" src="scripts/button.js"></script>
- <!--   <script type="module" src="scripts/recipes_card.js"></script>
-    <script type="module" src="scripts/recipes.js"></script>
--->
+    <script type="module" src="scripts/module/mainSearch.js"></script>
+    <script type="module" src="scripts/module/ingredientsSearch.js"></script>
   </body>
 </html>

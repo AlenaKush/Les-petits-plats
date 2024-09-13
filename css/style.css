@@ -239,7 +239,11 @@ main {
     overflow-y: scroll;
     -ms-overflow-style: none; 
     text-overflow: ellipsis;
-  /*  position: relative;*/
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 .input-filter {
@@ -284,4 +288,8 @@ main {
     font-weight: 400;
     align-self: center;
   
+}
+
+.selectedIngredient {
+    background-color: #FFD15B;
 }

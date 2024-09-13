@@ -1,12 +1,19 @@
-import { recipes } from './recipes.js'; 
-import { recipeCardElementDOM } from './recipes_card.js';
+import { recipes } from './data/recipes.js'; 
+import { createDropdownList } from './functions/createDropdownList.js';
+import { displayResults } from './functions/displayResults.js';
 
-//create card for every recipe
-recipes.forEach(recipe => {
-    const card = recipeCardElementDOM(recipe);
-    document.querySelector('.recipes_section').appendChild(card);
-});
 
-const numberRecipes = document.getElementById('number_recipes');
-const number = recipes.length;
-numberRecipes.textContent = number + ' recettes';
+// Получаем ингредиенты из рецептов
+const ingredients = recipes.flatMap(recipe => recipe.ingredients.map(ing => ing.ingredient));
+createDropdownList(ingredients, 'ingredients-list', 'ingredients-btn', 'ingredients-dropdown', 'ingredients-arrow');
+
+// Получаем приборы из рецептов
+const appliances = recipes.map(recipe => recipe.appliance);
+createDropdownList(appliances, 'appliance-list', 'appareils-btn', 'appareils-dropdown', 'appliance-arrow');
+
+// Получаем кухонную утварь из рецептов
+const ustensils = recipes.flatMap(recipe => recipe.ustensils);
+createDropdownList(ustensils, 'ustensils-list', 'ustensils-btn', 'ustensils-dropdown', 'ustensils-arrow');
+
+displayResults(recipes);
+

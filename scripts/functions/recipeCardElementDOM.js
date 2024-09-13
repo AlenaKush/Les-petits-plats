@@ -1,5 +1,3 @@
-import { recipes } from './recipes.js'; 
-
 //create card's content
 export function recipeCardElementDOM(recipe) {
     const card = document.createElement('article');
