@@ -22,25 +22,28 @@
     <main id="main">
       <div class="seach_and_number_recipes">
         <div id="dropdown-section">
-          <div class="btn-conteiner">
+          <div id="ingredients-conteiner" class="btn-conteiner">
             <div class="dropdown-button" id="ingredients-btn">
               <button class="button-name">Ingrédients</button>
               <span id="ingredients-arrow" class="material-symbols-outlined rotate">keyboard_arrow_up</span>
             </div>
             <div class="dropdown-content" id="ingredients-dropdown">
               <input type="text" id="ingredient-search" class="input-filter"/>
+              <span id="clear-ingredient" data-target="ingredient-search" class="material-symbols-outlined clear-input">close</span>
               <span id="ingredients-search-icon" class="material-symbols-outlined dropdown-search-icon">search</span>
               <ul id="ingredients-list"></ul>
             </div>
+            
           </div>
           <div class="btn-conteiner">
-            <div class="dropdown-button" id="appareils-btn">
+            <div class="dropdown-button" id="appliance-btn">
               <button class="button-name" >Appareils</button>
               <span id="appliance-arrow" class="material-symbols-outlined rotate">keyboard_arrow_up</span>
             </div>  
-            <div class="dropdown-content" id="appareils-dropdown">
+            <div class="dropdown-content" id="appliance-dropdown">
               <input type="text" id="appliance-search" class="input-filter"/>
-              <span id="appareils-search-icon" class="material-symbols-outlined dropdown-search-icon">search</span>
+              <span id="clear-appliance" data-target="appliance-search" class="clear-input material-symbols-outlined">close</span>
+              <span id="appliance-search-icon" class="material-symbols-outlined dropdown-search-icon">search</span>
               <ul id="appliance-list"></ul>
             </div>
           </div>
@@ -51,6 +54,7 @@
             </div>
             <div class="dropdown-content" id="ustensils-dropdown">
               <input type="text" id="ustensils-search" class="input-filter"/>
+              <span id="clear-ustensils" data-target="ustensils-search" class="material-symbols-outlined clear-input">close</span>
               <span id="ustensils-search-icon" class="material-symbols-outlined dropdown-search-icon">search</span>
               <ul id="ustensils-list"></ul>
             </div>

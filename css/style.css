@@ -257,6 +257,16 @@ input[type="search"]::-webkit-search-cancel-button {
     color: gray;
 }
 
+#clear-ingredient, #clear-appliance, #clear-ustensils {
+   display: none;
+   position: absolute;
+   top: 24px;
+   right: 30px;
+   color: #C6C6C6;
+   font-size: 12px;
+   cursor: pointer;
+}
+
 .dropdown-search-icon {
     position: absolute;
     top: 18px;

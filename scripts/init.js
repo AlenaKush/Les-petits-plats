@@ -9,7 +9,7 @@ createDropdownList(ingredients, 'ingredients-list', 'ingredients-btn', 'ingredie
 
 // Получаем приборы из рецептов
 const appliances = recipes.map(recipe => recipe.appliance);
-createDropdownList(appliances, 'appliance-list', 'appareils-btn', 'appareils-dropdown', 'appliance-arrow');
+createDropdownList(appliances, 'appliance-list', 'appliance-btn', 'appliance-dropdown', 'appliance-arrow');
 
 // Получаем кухонную утварь из рецептов
 const ustensils = recipes.flatMap(recipe => recipe.ustensils);

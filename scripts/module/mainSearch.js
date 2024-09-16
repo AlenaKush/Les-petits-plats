@@ -17,6 +17,41 @@ searchInput.addEventListener('input', function() {
 
 export function filterRecipes(query) {
     let filteredRecipes = [];
+    query = query.toLowerCase(); 
+
+    for (let i = 0; i < recipes.length; i++) {
+        const recipe = recipes[i];
+        
+        const recipeName = recipe.name.toLowerCase();
+        const recipeDescription = recipe.description.toLowerCase();
+
+        if (recipeName.includes(query)) {
+            filteredRecipes.push(recipe);
+        } 
+        else if (recipeDescription.includes(query)) {
+            filteredRecipes.push(recipe);
+        } 
+        else {
+            let matchesIngredients = false; 
+            for (let j = 0; matchesIngredients !== true && j < recipe.ingredients.length; j++) {
+                const ingredient = recipe.ingredients[j].ingredient.toLowerCase();
+                if (ingredient.includes(query)) {
+                    matchesIngredients = true;
+                }
+            }
+
+            if (matchesIngredients) {
+                filteredRecipes.push(recipe);
+            }
+        }
+    }
+
+    return filteredRecipes;
+}
+/*
+
+export function filterRecipes(query) {
+    let filteredRecipes = [];
 
     for (let i = 0; i < recipes.length; i++) {
         const recipe = recipes[i];
@@ -39,4 +74,4 @@ export function filterRecipes(query) {
     }
 
     return filteredRecipes;
-}
+}*/
