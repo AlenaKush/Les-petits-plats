@@ -13,8 +13,8 @@ searchInputIngredients.addEventListener('input', function () {
     if (queryIngredients.length > 0) {
         clearInput.style.display = 'block';
         if (queryIngredients.length >= 3) {
-            const filteredIngredients = filterRecipesByIngredients(queryIngredients, currentDisplayedRecipes);
-            displayResults(filteredIngredients);
+           /* const filteredIngredients = filterRecipesByIngredients(queryIngredients, currentDisplayedRecipes);*/
+         /*   displayResults(filteredIngredients); //убрала фильтрацию карточек*/ 
             for (let i = 0; i < ingredientsItems.length; i++) {
                 const item = ingredientsItems[i];
                 const itemText = item.textContent.toLowerCase();
@@ -25,14 +25,14 @@ searchInputIngredients.addEventListener('input', function () {
                 }
             }
         } else {
-            displayResults(currentDisplayedRecipes);
+          /*  displayResults(currentDisplayedRecipes);*/
             ingredientsItems.forEach(item => {
                 item.style.display = '';
             });
         }
     } else {
         clearInput.style.display = 'none';
-        displayResults(currentDisplayedRecipes);
+    /*    displayResults(currentDisplayedRecipes);*/
         ingredientsItems.forEach(item => {
             item.style.display = '';
         });
@@ -55,10 +55,15 @@ ingredientsList.addEventListener('click', function(event) {
         displayResults(filteredRecipes);
 
 
-        const selectedIngredient = document.createElement('div');
-        const conteinerIngredients = document.getElementById('ingredients-conteiner');
+        const selectedIngredient = document.getElementById('selected_ingredient');
         selectedIngredient.textContent = ingredient;
-        conteinerIngredients.appendChild(selectedIngredient);
+        const conteiner = document.querySelector('.selected_item');
+        conteiner.style.display = 'flex';
+
+        const dropdown =document.getElementById('ingredients-dropdown');
+        dropdown.style.display = 'none';
+
+        
         
        /* const movedElement = clickedElement.cloneNode(true); 
         movedElement.classList.add('selectedIngredient');
@@ -67,6 +72,22 @@ ingredientsList.addEventListener('click', function(event) {
     }
 });
 
+
+const close = document.getElementById('close_ingredient');
+
+// Обработчик клика
+close.addEventListener('click', function() {
+    // Скрываем элемент с классом 'selected_item'
+    const selectedItem = document.querySelector('.selected_item');
+    if (selectedItem) {
+        selectedItem.style.display = 'none';
+
+        const queryIngredients = searchInputIngredients.value.toLowerCase();
+        const filteredIngredients = filterRecipesByIngredients(queryIngredients, currentDisplayedRecipes);
+        displayResults(filteredIngredients)
+    }
+
+});
 
 export function filterRecipesByIngredients(query, displayedRecipes) {
     const filteredRecipes = [];

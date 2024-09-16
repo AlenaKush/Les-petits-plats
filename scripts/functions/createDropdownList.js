@@ -71,7 +71,7 @@ function setupClearInput() {
                 });
 
                 // Дополнительно можно сбросить сортировку рецептов, если это требуется
-                displayResults(currentDisplayedRecipes);
+               /* displayResults(currentDisplayedRecipes);*/
             }
         });
     });
@@ -79,7 +79,6 @@ function setupClearInput() {
 
 // Вызываем универсальную функцию для всех кнопок
 setupClearInput();
-
 
 
 /*// Универсальная функция для создания выпадающих списков
