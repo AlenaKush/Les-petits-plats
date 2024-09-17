@@ -22,7 +22,7 @@
     <main id="main">
       <div class="seach_and_number_recipes">
         <div id="dropdown-section">
-          <div id="ingredients-conteiner" class="btn-conteiner">
+          <div class="btn-conteiner">
             <div class="dropdown-button" id="ingredients-btn">
               <button class="button-name">Ingrédients</button>
               <span id="ingredients-arrow" class="material-symbols-outlined rotate">keyboard_arrow_up</span>
@@ -33,7 +33,7 @@
               <span id="ingredients-search-icon" class="material-symbols-outlined dropdown-search-icon">search</span>
               <ul id="ingredients-list"></ul>
             </div>
-            <div class="selected_item">
+            <div class="selected_item" data-target="ingredients-btn">
               <p id="selected_ingredient"></p>
               <span id="close_ingredient" class="material-symbols-outlined">close</span>
             </div>
@@ -49,7 +49,7 @@
               <span id="appliance-search-icon" class="material-symbols-outlined dropdown-search-icon">search</span>
               <ul id="appliance-list"></ul>
             </div>
-            <div class="selected_item">
+            <div class="selected_item" data-target="appliance-btn">
               <p id="selected_appliance"></p>
               <span id="close_appliance" class="material-symbols-outlined">close</span>
             </div>
@@ -65,7 +65,7 @@
               <span id="ustensils-search-icon" class="material-symbols-outlined dropdown-search-icon">search</span>
               <ul id="ustensils-list"></ul>
             </div>
-            <div class="selected_item">
+            <div class="selected_item" data-target="ustensils-btn">
               <p id="selected_ustensils"></p>
               <span id="close_ustensils" class="material-symbols-outlined">close</span>
             </div>
@@ -77,6 +77,6 @@
     </main>
     <script type="module" src="scripts/init.js"></script>
     <script type="module" src="scripts/module/mainSearch.js"></script>
-    <script type="module" src="scripts/module/ingredientsSearch.js"></script>
+    <script type="module" src="scripts/module/refineSearch.js"></script>
   </body>
 </html>
