@@ -70,7 +70,7 @@ function setupListClickListener(listId, selectedItemId, dropdownId, filterFuncti
 }
 
 // Настройка слушателей для списка ингредиентов
-setupListClickListener('ingredients-list', 'selected_ingredient', 'ingredients-dropdown', 'ingredients', 'ingredients-btn');
+setupListClickListener('ingredients-list', 'selected_ingredient', 'ingredients-dropdown', 'ingredients', 'ingredient-btn');
 
 // Настройка слушателей для списка приборов
 setupListClickListener('appliance-list', 'selected_appliance', 'appliance-dropdown', 'appliance', 'appliance-btn');
@@ -83,39 +83,32 @@ function setupCloseButton(closeBtnId, inputId, filterField) {
     const closeButton = document.getElementById(closeBtnId);
     const inputElement = document.getElementById(inputId);
 
-    if (!closeButton || !inputElement) {
-        console.error(`Element with id ${closeBtnId} or ${inputId} not found`);
-        return;
-    }
-
     closeButton.addEventListener('click', function() {
-        console.log(`Close button ${closeBtnId} clicked`);
+        // Получаем targetButtonId без 'close_' и с '-btn'
+        const targetButtonId = closeBtnId.replace('close_', '') + '-btn';
 
-        const targetButtonId = closeBtnId.replace('close_', '');
-        console.log(`Target button ID: ${targetButtonId}`);
-
+        // Ищем контейнер, у которого data-target соответствует targetButtonId
         const selectedItemContainer = document.querySelector(`.selected_item[data-target="${targetButtonId}"]`);
-        console.log(`Selected item container:`, selectedItemContainer);
 
         if (selectedItemContainer) {
+            // Скрываем контейнер с выбранным элементом
             selectedItemContainer.style.display = 'none';
 
+            // Получаем текущее значение из поля ввода
             const query = inputElement.value.toLowerCase();
-            console.log(`Filtering with query: ${query}`);
 
+            // Применяем фильтрацию с использованием переданной функции
             const filteredResults = filterRecipesByQuery(query, currentDisplayedRecipes, filterField);
             displayResults(filteredResults, 'recipes_section', recipeCardElementDOM, updateNumberOfRecipes);
-        } else {
-            console.error(`Selected item container for ${targetButtonId} not found`);
         }
     });
 }
-
 
 // Настройка обработчиков для закрытия выбранных элементов
 setupCloseButton('close_ingredient', 'ingredient-search', 'ingredients');
 setupCloseButton('close_appliance', 'appliance-search', 'appliance');
 setupCloseButton('close_ustensils', 'ustensils-search', 'ustensils');
+
 
 
 export function filterRecipesByQuery(query, displayedRecipes, field) {
