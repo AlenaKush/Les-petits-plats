@@ -43,10 +43,9 @@ export function filterRecipes(query, allRecipes) {
                       recipeDescription.includes(query);
 
         if (!matches) {
-            for (let j = 0; j < recipe.ingredients.length; j++) {
+            for (let j = 0; matches !== true && j < recipe.ingredients.length; j++) {
                 if (recipe.ingredients[j].ingredient.toLowerCase().includes(query)) {
                     matches = true;
-                    break;
                 }
             }
         }
@@ -69,37 +68,33 @@ export function filterByAdditionalFilters(filteredRecipes) {
         let matches = true;
 
         // Check ingredients
-        for (let j = 0; j < selectedFilters.ingredients.length; j++) {
+        for (let j = 0; matches !== false && j < selectedFilters.ingredients.length; j++) {
             const filter = selectedFilters.ingredients[j];
             let ingredientMatch = false;
-            for (let k = 0; k < recipe.ingredients.length; k++) {
+            for (let k = 0; ingredientMatch !== true && k < recipe.ingredients.length; k++) {
                 if (recipe.ingredients[k].ingredient.toLowerCase() === filter) {
                     ingredientMatch = true;
-                    break;
                 }
             }
             if (!ingredientMatch) {
                 matches = false;
-                break;
             }
         }
 
         // Check appliance
         if (matches) {
-            for (let j = 0; j < selectedFilters.appliance.length; j++) {
+            for (let j = 0; matches !== false && j < selectedFilters.appliance.length; j++) {
                 if (recipe.appliance.toLowerCase() !== selectedFilters.appliance[j]) {
                     matches = false;
-                    break;
                 }
             }
         }
 
         // Check utensils
         if (matches) {
-            for (let j = 0; j < selectedFilters.ustensils.length; j++) {
+            for (let j = 0; matches !== false && j < selectedFilters.ustensils.length; j++) {
                 if (!recipe.ustensils.includes(selectedFilters.ustensils[j])) {
                     matches = false;
-                    break;
                 }
             }
         }
