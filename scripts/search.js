@@ -15,11 +15,13 @@ let selectedFilters = {
 export function displayResults(filteredRecipes) {
     searchResults.innerHTML = '';
     currentDisplayedRecipes.length = 0;
-    filteredRecipes.forEach(recipe => {
+    for (let i = 0; i < filteredRecipes.length; i++) {
+        const recipe = filteredRecipes[i];
         const card = recipeCardElementDOM(recipe);
         searchResults.appendChild(card);
         currentDisplayedRecipes.push(recipe);
-    });
+    }
+    
     updateNumberOfRecipes(filteredRecipes.length);
 }
 
@@ -31,26 +33,85 @@ export function updateNumberOfRecipes(count) {
 
 //filter recipes
 export function filterRecipes(query, allRecipes) {
-    return allRecipes.filter(recipe => {
+    const filteredRecipes = [];
+
+    for (let i = 0; i < allRecipes.length; i++) {
+        const recipe = allRecipes[i];
         const recipeName = recipe.name.toLowerCase();
         const recipeDescription = recipe.description.toLowerCase();
+        let matches = recipeName.includes(query) ||
+                      recipeDescription.includes(query);
 
-        return recipeName.includes(query) ||
-               recipeDescription.includes(query) ||
-               recipe.ingredients.some(ingredient => ingredient.ingredient.toLowerCase().includes(query));
-    });
+        if (!matches) {
+            for (let j = 0; j < recipe.ingredients.length; j++) {
+                if (recipe.ingredients[j].ingredient.toLowerCase().includes(query)) {
+                    matches = true;
+                    break;
+                }
+            }
+        }
+
+        if (matches) {
+            filteredRecipes.push(recipe);
+        }
+    }
+
+    return filteredRecipes;
 }
+
 
 //refined faltation
 export function filterByAdditionalFilters(filteredRecipes) {
-    return filteredRecipes.filter(recipe => {
-        return (
-            selectedFilters.ingredients.every(filter => recipe.ingredients.some(ingredient => ingredient.ingredient.toLowerCase() === filter)) &&
-            selectedFilters.appliance.every(filter => recipe.appliance.toLowerCase() === filter) &&
-            selectedFilters.ustensils.every(filter => recipe.ustensils.includes(filter))
-        );
-    });
+    const refinedRecipes = [];
+
+    for (let i = 0; i < filteredRecipes.length; i++) {
+        const recipe = filteredRecipes[i];
+        let matches = true;
+
+        // Check ingredients
+        for (let j = 0; j < selectedFilters.ingredients.length; j++) {
+            const filter = selectedFilters.ingredients[j];
+            let ingredientMatch = false;
+            for (let k = 0; k < recipe.ingredients.length; k++) {
+                if (recipe.ingredients[k].ingredient.toLowerCase() === filter) {
+                    ingredientMatch = true;
+                    break;
+                }
+            }
+            if (!ingredientMatch) {
+                matches = false;
+                break;
+            }
+        }
+
+        // Check appliance
+        if (matches) {
+            for (let j = 0; j < selectedFilters.appliance.length; j++) {
+                if (recipe.appliance.toLowerCase() !== selectedFilters.appliance[j]) {
+                    matches = false;
+                    break;
+                }
+            }
+        }
+
+        // Check utensils
+        if (matches) {
+            for (let j = 0; j < selectedFilters.ustensils.length; j++) {
+                if (!recipe.ustensils.includes(selectedFilters.ustensils[j])) {
+                    matches = false;
+                    break;
+                }
+            }
+        }
+
+        if (matches) {
+            refinedRecipes.push(recipe);
+        }
+    }
+
+    return refinedRecipes;
 }
+
 
 
 export function updateSelectedFilters(field, filterValue) {
@@ -91,51 +152,67 @@ function setupSearchInput(inputId, listId, clearInputId) {
     // Add input event
     searchInput.addEventListener('input', function () {
         const query = searchInput.value.toLowerCase();
-        const listItems = list.querySelectorAll('li'); // Getting list elements
+        const listItems = list.querySelectorAll('li'); // Используем querySelectorAll
 
         if (query.length > 0) {
             clearInput.style.display = 'block';  // Show clear button if text is entered
             if (query.length >= 3) {
                 // Фильтруем элементы списка, если запрос содержит 3 или более символов
-                listItems.forEach(item => {
-                    const itemText = item.textContent.toLowerCase();
-                    item.style.display = itemText.includes(query) ? '' : 'none';
-                });
+                for (let i = 0; i < listItems.length; i++) {
+                    const itemText = listItems[i].textContent.toLowerCase();
+                    listItems[i].style.display = itemText.includes(query) ? '' : 'none';
+                }
             } else {
-                // If the request is less than 3 characters, we show all the list elements
-                listItems.forEach(item => {
-                    item.style.display = '';
-                });
+                // Если запрос содержит меньше 3 символов, показываем все элементы
+                for (let i = 0; i < listItems.length; i++) {
+                    listItems[i].style.display = '';
+                }
             }
         } else {
-            // If the request is empty, hide the clear button and show all elements
+            // Если запрос пустой, скрываем кнопку очистки и показываем все элементы
             clearInput.style.display = 'none';
-            listItems.forEach(item => {
-                item.style.display = '';
-            });
+            for (let i = 0; i < listItems.length; i++) {
+                listItems[i].style.display = '';
+            }
         }
     });
 }
 
-function setupClearButton(inputId, clearInputId) {
+
+//Очистить значение поиска и показать все элементы списка, когда пользователь нажимает кнопку очистки.
+function setupClearButton(inputId, clearInputId) { 
     const searchInput = document.getElementById(inputId);
     const clearInput = document.getElementById(clearInputId);
 
     clearInput.addEventListener('click', function () {
+        // Очистка значения поиска
         searchInput.value = '';
+        // Скрытие кнопки очистки
         clearInput.style.display = 'none';
 
+        // Показ всех элементов списка
         const list = document.getElementById(inputId.replace('-search', '-list'));
-        list.querySelectorAll('li').forEach(item => item.style.display = '');
+        const listItems = list.getElementsByTagName('li'); // Получаем все элементы <li>
 
-        // If there are additional filters, apply them
-        let filteredResults = filterRecipes(searchInput.value.toLowerCase(), recipes);
+        // Устанавливаем стиль display в '' для всех элементов списка
+        for (let i = 0; i < listItems.length; i++) {
+            listItems[i].style.display = ''; // Показ всех элементов
+        }
+
+        // Применение фильтров к полному списку рецептов
+        let filteredResults = recipes; // Показать все рецепты
+
+        // Применяем дополнительные фильтры, если они установлены
         if (selectedFilters.ingredients.length || selectedFilters.appliance.length || selectedFilters.ustensils.length) {
             filteredResults = filterByAdditionalFilters(filteredResults);
         }
+
+        // Отображение всех рецептов с применением фильтров
         displayResults(filteredResults);
     });
 }
+
+
 
 
 setupSearchInput('ingredient-search', 'ingredients-list', 'clear-ingredient');
@@ -177,7 +254,7 @@ setupListClickListener('appliance-list', 'selected_appliance', 'appliance-dropdo
 
 setupListClickListener('ustensils-list', 'selected_ustensils', 'ustensils-dropdown', 'ustensils', 'ustensils-btn');
 
-// Function for setting up a handler for clicks on filter close buttons
+// Удалить выбранный фильтр из отображения и очистить соответствующее поле поиска.
 function setupCloseButton(closeBtnId, inputId, filterField) {
     const closeButton = document.getElementById(closeBtnId);
     const inputElement = document.getElementById(inputId);
@@ -203,6 +280,8 @@ function setupCloseButton(closeBtnId, inputId, filterField) {
         }
     });
 }
+
+
 
 setupCloseButton('close_ingredient', 'ingredient-search', 'ingredients');
 setupCloseButton('close_appliance', 'appliance-search', 'appliance');
