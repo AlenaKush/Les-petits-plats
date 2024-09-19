@@ -11,7 +11,7 @@ let selectedFilters = {
     ustensils: []
 };
 
-//Function for displaying search results
+// Function for displaying search results
 export function displayResults(filteredRecipes) {
     searchResults.innerHTML = '';
     currentDisplayedRecipes.length = 0;
@@ -23,35 +23,45 @@ export function displayResults(filteredRecipes) {
     updateNumberOfRecipes(filteredRecipes.length);
 }
 
-//function to update the number of displayed recipes
+// Function to update the number of displayed recipes
 export function updateNumberOfRecipes(count) {
     const numberRecipes = document.getElementById('number_recipes');
     numberRecipes.textContent = count + (count > 1 ? ' recettes' : ' recette');
 }
 
-//filter recipes
+// Filter recipes
 export function filterRecipes(query, allRecipes) {
+    const lowerQuery = query.toLowerCase();
     return allRecipes.filter(recipe => {
         const recipeName = recipe.name.toLowerCase();
         const recipeDescription = recipe.description.toLowerCase();
-
-        return recipeName.includes(query) ||
-               recipeDescription.includes(query) ||
-               recipe.ingredients.some(ingredient => ingredient.ingredient.toLowerCase().includes(query));
+        const ingredientsMatch = recipe.ingredients.some(ingredient =>
+            ingredient.ingredient.toLowerCase().includes(lowerQuery)
+        );
+        return recipeName.includes(lowerQuery) ||
+               recipeDescription.includes(lowerQuery) ||
+               ingredientsMatch;
     });
 }
 
-//refined faltation
+// Refined filtration
 export function filterByAdditionalFilters(filteredRecipes) {
     return filteredRecipes.filter(recipe => {
-        return (
-            selectedFilters.ingredients.every(filter => recipe.ingredients.some(ingredient => ingredient.ingredient.toLowerCase() === filter)) &&
-            selectedFilters.appliance.every(filter => recipe.appliance.toLowerCase() === filter) &&
-            selectedFilters.ustensils.every(filter => recipe.ustensils.includes(filter))
+        const ingredientsMatch = selectedFilters.ingredients.every(filter =>
+            recipe.ingredients.some(ingredient =>
+                ingredient.ingredient.toLowerCase() === filter
+            )
         );
+        const applianceMatch = selectedFilters.appliance.every(filter =>
+            recipe.appliance.toLowerCase() === filter
+        );
+        const ustensilsMatch = selectedFilters.ustensils.every(filter =>
+            recipe.ustensils.includes(filter)
+        );
+
+        return ingredientsMatch && applianceMatch && ustensilsMatch;
     });
 }
-
 
 export function updateSelectedFilters(field, filterValue) {
     selectedFilters[field] = [filterValue];
@@ -68,9 +78,8 @@ searchInput.addEventListener('input', function() {
     const queryMain = searchInput.value.toLowerCase();
 
     let filteredRecipes = [];
-
     if (queryMain.length >= 3) {
-        // If the query length is more then 3 characters, filter by the main query
+        // If the query length is more than 3 characters, filter by the main query
         filteredRecipes = filterRecipes(queryMain, recipes);
         // Apply additional filters
         filteredRecipes = filterByAdditionalFilters(filteredRecipes);
@@ -88,31 +97,26 @@ function setupSearchInput(inputId, listId, clearInputId) {
     const list = document.getElementById(listId);
     const clearInput = document.getElementById(clearInputId);
 
-    // Add input event
     searchInput.addEventListener('input', function () {
         const query = searchInput.value.toLowerCase();
         const listItems = list.querySelectorAll('li'); // Getting list elements
 
         if (query.length > 0) {
-            clearInput.style.display = 'block';  // Show clear button if text is entered
+            clearInput.style.display = 'block'; // Show clear button if text is entered
             if (query.length >= 3) {
-                // Фильтруем элементы списка, если запрос содержит 3 или более символов
+                // Filter list items
                 listItems.forEach(item => {
                     const itemText = item.textContent.toLowerCase();
                     item.style.display = itemText.includes(query) ? '' : 'none';
                 });
             } else {
-                // If the request is less than 3 characters, we show all the list elements
-                listItems.forEach(item => {
-                    item.style.display = '';
-                });
+                // Show all list items
+                listItems.forEach(item => item.style.display = '');
             }
         } else {
-            // If the request is empty, hide the clear button and show all elements
+            // Hide clear button and show all items
             clearInput.style.display = 'none';
-            listItems.forEach(item => {
-                item.style.display = '';
-            });
+            listItems.forEach(item => item.style.display = '');
         }
     });
 }
@@ -136,7 +140,6 @@ function setupClearButton(inputId, clearInputId) {
         displayResults(filteredResults);
     });
 }
-
 
 setupSearchInput('ingredient-search', 'ingredients-list', 'clear-ingredient');
 setupClearButton('ingredient-search', 'clear-ingredient');
@@ -172,9 +175,7 @@ function setupListClickListener(listId, selectedItemId, dropdownId, filterField,
 }
 
 setupListClickListener('ingredients-list', 'selected_ingredient', 'ingredients-dropdown', 'ingredients', 'ingredient-btn');
-
 setupListClickListener('appliance-list', 'selected_appliance', 'appliance-dropdown', 'appliance', 'appliance-btn');
-
 setupListClickListener('ustensils-list', 'selected_ustensils', 'ustensils-dropdown', 'ustensils', 'ustensils-btn');
 
 // Function for setting up a handler for clicks on filter close buttons
