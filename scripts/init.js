@@ -1,6 +1,6 @@
 import { recipes } from './data/recipes.js'; 
 import { createDropdownList } from './functions/createDropdownList.js';
-import { displayResults } from './functions/displayResults.js';
+import { displayResults } from './search.js';
 
 
 // Получаем ингредиенты из рецептов
