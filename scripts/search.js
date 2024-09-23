@@ -32,12 +32,8 @@ export function updateNumberOfRecipes(count) {
 }
 
 //filter recipes
-// Фильтрация рецептов и возврат уникальных значений для дропдаунов
 export function filterRecipes(query, allRecipes) {
     const filteredRecipes = [];
-    const ingredientsSet = new Set();
-    const appliancesSet = new Set();
-    const utensilsSet = new Set();
 
     for (let i = 0; i < allRecipes.length; i++) {
         const recipe = allRecipes[i];
@@ -56,25 +52,11 @@ export function filterRecipes(query, allRecipes) {
 
         if (matches) {
             filteredRecipes.push(recipe);
-            // Добавляем уникальные значения для дропдаунов
-            recipe.ingredients.forEach(ingredient => {
-                ingredientsSet.add(ingredient.ingredient.toLowerCase());
-            });
-            appliancesSet.add(recipe.appliance.toLowerCase());
-            recipe.ustensils.forEach(ustensil => {
-                utensilsSet.add(ustensil.toLowerCase());
-            });
         }
     }
 
-    return {
-        filteredRecipes,
-        uniqueIngredients: [...ingredientsSet],
-        uniqueAppliances: [...appliancesSet],
-        uniqueUstensils: [...utensilsSet],
-    };
+    return filteredRecipes;
 }
-
 
 
 //refined faltation
@@ -163,75 +145,6 @@ searchInput.addEventListener('input', function() {
     displayResults(filteredRecipes);
 });
 
-
-// Обновление отображаемых элементов в дропдауне на основе текущих фильтров
-function updateDropdowns(filteredRecipes) {
-    const ingredientList = document.getElementById('ingredients-list');
-    const applianceList = document.getElementById('appliance-list');
-    const ustensilsList = document.getElementById('ustensils-list');
-
-    // Сбор уникальных значений для ингредиентов, устройств и принадлежностей
-    const ingredientsSet = new Set();
-    const appliancesSet = new Set();
-    const utensilsSet = new Set();
-
-    filteredRecipes.forEach(recipe => {
-        recipe.ingredients.forEach(ingredient => {
-            ingredientsSet.add(ingredient.ingredient.toLowerCase());
-        });
-        appliancesSet.add(recipe.appliance.toLowerCase());
-        recipe.ustensils.forEach(ustensil => {
-            utensilsSet.add(ustensil.toLowerCase());
-        });
-    });
-
-    // Обновление списка ингредиентов
-    ingredientList.innerHTML = '';
-    ingredientsSet.forEach(ingredient => {
-        const li = document.createElement('li');
-        li.textContent = ingredient;
-        ingredientList.appendChild(li);
-    });
-
-    // Обновление списка устройств
-    applianceList.innerHTML = '';
-    appliancesSet.forEach(appliance => {
-        const li = document.createElement('li');
-        li.textContent = appliance;
-        applianceList.appendChild(li);
-    });
-
-    // Обновление списка принадлежностей
-    ustensilsList.innerHTML = '';
-    utensilsSet.forEach(ustensil => {
-        const li = document.createElement('li');
-        li.textContent = ustensil;
-        ustensilsList.appendChild(li);
-    });
-}
-
-// Обновите основной обработчик поиска
-searchInput.addEventListener('input', function() {
-    const queryMain = searchInput.value.toLowerCase();
-
-    let filteredRecipes = [];
-
-    if (queryMain.length >= 3) {
-        // Фильтрация по основному запросу
-        filteredRecipes = filterRecipes(queryMain, recipes);
-        // Применение дополнительных фильтров
-        filteredRecipes = filterByAdditionalFilters(filteredRecipes);
-    } else {
-        // Если запрос меньше 3 символов, показываем все рецепты
-        filteredRecipes = recipes;
-    }
-
-    displayResults(filteredRecipes);
-    updateDropdowns(filteredRecipes);  // Обновление дропдаунов
-});
-
-
-
 // Function for setting up search in lists
 function setupSearchInput(inputId, listId, clearInputId) {
     const searchInput = document.getElementById(inputId);
@@ -315,17 +228,11 @@ setupClearButton('ustensils-search', 'clear-ustensils');
 
 //создание кнопок выбранного элемента листа
 function addSelectedItem(filterType, selectedItem) {
-    // Находим соответствующий контейнер по filterType (например, #ingredients-btn)
-    const targetButton = document.querySelector(`#${filterType}`);
-    if (!targetButton) {
-        console.error(`Button with ID ${filterType} not found.`);
-        return;
-    }
-
-    // Находим родительский контейнер .btn-conteiner для этой кнопки
-    const container = targetButton.closest('.btn-conteiner');
+    // Находим соответствующий контейнер по filterType (например, ingredients-btn)
+    const container = document.querySelector(`#${filterType}`).closest('.btn-conteiner');
+    
     if (!container) {
-        console.error(`Parent container for ${filterType} not found.`);
+        console.error(`Container for ${filterType} not found.`);
         return;
     }
 
@@ -350,7 +257,7 @@ function addSelectedItem(filterType, selectedItem) {
         
         // Очистка фильтра и поля поиска
         const inputElement = document.getElementById(`${filterType.replace('-btn', '')}-search`);
-        if (inputElement) inputElement.value = '';  // Очищаем соответствующее поле поиска
+        inputElement.value = '';  // Очищаем соответствующее поле поиска
 
         clearSelectedFilters(filterType);  // Очищаем выбранные фильтры
 
@@ -368,10 +275,9 @@ function addSelectedItem(filterType, selectedItem) {
     newItem.appendChild(closeSpan);
 
     // Добавляем новый элемент в найденный контейнер
-    container.appendChild(newItem);  // Меняем здесь
+    container.appendChild(newItem);
     newItem.style.display = 'flex';
 }
-
 
 
 
