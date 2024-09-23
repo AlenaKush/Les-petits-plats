@@ -1,3 +1,24 @@
+//получаем данные
+export function getRecipeData(recipes, dataExtractor) {
+    const data = [];
+    // Проходим по каждому рецепту
+    for (let i = 0; i < recipes.length; i++) {
+        const recipe = recipes[i];
+        const extractedData = dataExtractor(recipe);
+        // Если extractedData — это массив (например, для ингредиентов или утвари), добавляем все элементы
+        if (Array.isArray(extractedData)) {
+            for (let j = 0; j < extractedData.length; j++) {
+                data.push(extractedData[j]);
+            }
+        } else {
+            // Если это одиночное значение (например, для прибора), добавляем его напрямую
+            data.push(extractedData);
+        }
+    }
+    return data;
+}
+
+//создаем лист
 export function createDropdownList(items, listElementId, dropdownBtnId, dropdownElementId, arrowIconId) {
     const uniqueItems = new Set(items);  // Создаем уникальный набор элементов
     const ulElement = document.getElementById(listElementId);  // Ссылка на элемент списка
@@ -16,6 +37,7 @@ export function createDropdownList(items, listElementId, dropdownBtnId, dropdown
     setupDropdown(dropdownBtnId, dropdownElementId, arrowIconId);
 }
 
+//управляем поведением
 function setupDropdown(dropdownBtnId, dropdownElementId, arrowIconId) {
     const dropdownBtn = document.getElementById(dropdownBtnId);
     const dropdownElement = document.getElementById(dropdownElementId);
@@ -72,22 +94,3 @@ function setupClearInput() {
 // Вызываем универсальную функцию для всех кнопок
 setupClearInput();
 
-
-export function getRecipeData(recipes, dataExtractor) {
-    const data = [];
-    // Проходим по каждому рецепту
-    for (let i = 0; i < recipes.length; i++) {
-        const recipe = recipes[i];
-        const extractedData = dataExtractor(recipe);
-        // Если extractedData — это массив (например, для ингредиентов или утвари), добавляем все элементы
-        if (Array.isArray(extractedData)) {
-            for (let j = 0; j < extractedData.length; j++) {
-                data.push(extractedData[j]);
-            }
-        } else {
-            // Если это одиночное значение (например, для прибора), добавляем его напрямую
-            data.push(extractedData);
-        }
-    }
-    return data;
-}
