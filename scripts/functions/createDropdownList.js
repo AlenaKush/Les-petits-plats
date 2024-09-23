@@ -71,3 +71,23 @@ function setupClearInput() {
 
 // Вызываем универсальную функцию для всех кнопок
 setupClearInput();
+
+
+export function getRecipeData(recipes, dataExtractor) {
+    const data = [];
+    // Проходим по каждому рецепту
+    for (let i = 0; i < recipes.length; i++) {
+        const recipe = recipes[i];
+        const extractedData = dataExtractor(recipe);
+        // Если extractedData — это массив (например, для ингредиентов или утвари), добавляем все элементы
+        if (Array.isArray(extractedData)) {
+            for (let j = 0; j < extractedData.length; j++) {
+                data.push(extractedData[j]);
+            }
+        } else {
+            // Если это одиночное значение (например, для прибора), добавляем его напрямую
+            data.push(extractedData);
+        }
+    }
+    return data;
+}
