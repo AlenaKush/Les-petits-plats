@@ -56,6 +56,16 @@ export function filterRecipes(query, allRecipes) {
         }
     }
 
+    // После того, как рецепты отфильтрованы, обновляем списки дропдаунов:
+    const ingredients = getRecipeData(filteredRecipes, recipe => recipe.ingredients.map(ing => ing.ingredient));
+    createDropdownList(ingredients, 'ingredients-list', 'ingredients-btn', 'ingredients-dropdown', 'ingredients-arrow');
+ 
+    const appliances = getRecipeData(filteredRecipes, recipe => recipe.appliance);
+    createDropdownList(appliances, 'appliance-list', 'appliance-btn', 'appliance-dropdown', 'appliance-arrow');
+ 
+    const ustensils = getRecipeData(filteredRecipes, recipe => recipe.ustensils);
+    createDropdownList(ustensils, 'ustensils-list', 'ustensils-btn', 'ustensils-dropdown', 'ustensils-arrow');
+
     return filteredRecipes;
 }
 
@@ -104,7 +114,7 @@ export function filterByAdditionalFilters(filteredRecipes) {
             refinedRecipes.push(recipe);
         }
     }
-
+    
     return refinedRecipes;
 }
 
@@ -114,19 +124,6 @@ export function updateSelectedFilters(field, filterValue) {
         console.log(`Добавлено: ${filterValue} в фильтр: ${field}`);  // Лог для проверки
     }
 }
-
-/*
-export function clearSelectedFilters(field, filterValue) {
-    const index = selectedFilters[field].indexOf(filterValue);
-    if (index > -1) {
-        selectedFilters[field].splice(index, 1); // Удаляем конкретный элемент
-    }
-}*/
-
-/*
-export function updateSelectedFilters(field, filterValue) {
-    selectedFilters[field] = [filterValue];
-}*/
 
 export function clearSelectedFilters(field, filterValue) {
     // Проверка на наличие поля в объекте selectedFilters
@@ -160,14 +157,14 @@ searchInput.addEventListener('input', function() {
         filteredRecipes = filterRecipes(queryMain, recipes);
         // Apply additional filters
         filteredRecipes = filterByAdditionalFilters(filteredRecipes);
-        //баг
+       /* //баг
         const ingredients = getRecipeData(filteredRecipes, recipe => recipe.ingredients.map(ing => ing.ingredient));
         createDropdownList(ingredients, 'ingredients-list', 'ingredients-btn', 'ingredients-dropdown', 'ingredients-arrow');
         const appliances = getRecipeData(filteredRecipes, recipe => recipe.appliance);
         createDropdownList(appliances, 'appliance-list', 'appliance-btn', 'appliance-dropdown', 'appliance-arrow');
         const ustensils = getRecipeData(filteredRecipes, recipe => recipe.ustensils);
         createDropdownList(ustensils, 'ustensils-list', 'ustensils-btn', 'ustensils-dropdown', 'ustensils-arrow');
-        
+        */
     } else {
         // If the query length is less than 3 characters, show all recipes
         filteredRecipes = recipes;
@@ -324,7 +321,7 @@ function addSelectedItem(filterType, selectedItem) {
     newItem.style.display = 'flex';
 }
 
-
+/*
 // Функция для обновления отображения после закрытия элемента
 function updateDisplayAfterClose() {
     const query = searchInput.value.toLowerCase();
@@ -335,7 +332,7 @@ function updateDisplayAfterClose() {
         filteredResults = filterByAdditionalFilters(filteredResults);
     }
     displayResults(filteredResults);
-}
+}*/
 
 
 // Function for setting up a click on a filter list КЛИК ПО Ингредиенту
@@ -360,6 +357,16 @@ function setupListClickListener(listId, selectedItemId, dropdownId, filterField,
             
             // Скрываем выпадающий список
             document.getElementById(dropdownId).style.display = 'none';
+        
+             // После того, как рецепты отфильтрованы, обновляем списки дропдаунов:
+            const ingredients = getRecipeData(filteredRecipes, recipe => recipe.ingredients.map(ing => ing.ingredient));
+            createDropdownList(ingredients, 'ingredients-list', 'ingredients-btn', 'ingredients-dropdown', 'ingredients-arrow');
+
+            const appliances = getRecipeData(filteredRecipes, recipe => recipe.appliance);
+            createDropdownList(appliances, 'appliance-list', 'appliance-btn', 'appliance-dropdown', 'appliance-arrow');
+
+            const ustensils = getRecipeData(filteredRecipes, recipe => recipe.ustensils);
+            createDropdownList(ustensils, 'ustensils-list', 'ustensils-btn', 'ustensils-dropdown', 'ustensils-arrow');
         }
     });
 }
