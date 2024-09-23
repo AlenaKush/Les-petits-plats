@@ -1,5 +1,6 @@
 import { recipes } from "./data/recipes.js";
 import { recipeCardElementDOM } from "./functions/recipeCardElementDOM.js";
+import { getRecipeData, createDropdownList } from "./functions/createDropdownList.js";
 
 let currentDisplayedRecipes = [];
 const searchResults = document.getElementById('recipes_section');
@@ -135,7 +136,12 @@ searchInput.addEventListener('input', function() {
         filteredRecipes = filterRecipes(queryMain, recipes);
         // Apply additional filters
         filteredRecipes = filterByAdditionalFilters(filteredRecipes);
-
+        const ingredients = getRecipeData(filteredRecipes, recipe => recipe.ingredients.map(ing => ing.ingredient));
+        createDropdownList(ingredients, 'ingredients-list', 'ingredients-btn', 'ingredients-dropdown', 'ingredients-arrow');
+        const appliances = getRecipeData(filteredRecipes, recipe => recipe.appliance);
+        createDropdownList(appliances, 'appliance-list', 'appliance-btn', 'appliance-dropdown', 'appliance-arrow');
+        const ustensils = getRecipeData(filteredRecipes, recipe => recipe.ustensils);
+        createDropdownList(ustensils, 'ustensils-list', 'ustensils-btn', 'ustensils-dropdown', 'ustensils-arrow');
         
     } else {
         // If the query length is less than 3 characters, show all recipes
@@ -157,28 +163,40 @@ function setupSearchInput(inputId, listId, clearInputId) {
         const listItems = list.querySelectorAll('li'); // Используем querySelectorAll
 
         if (query.length > 0) {
-            clearInput.style.display = 'block';  // Show clear button if text is entered
-            if (query.length >= 3) {
-                // Фильтруем элементы списка, если запрос содержит 3 или более символов
-                for (let i = 0; i < listItems.length; i++) {
-                    const itemText = listItems[i].textContent.toLowerCase();
+            clearInput.style.display = 'block'; // Показать кнопку очистки, если текст введён
+
+            let hasVisibleItems = false;
+
+            // Фильтруем элементы списка
+            for (let i = 0; i < listItems.length; i++) {
+                const itemText = listItems[i].textContent.toLowerCase();
+                if (query.length >= 3) {
+                    // Показываем элемент, если он соответствует запросу
                     listItems[i].style.display = itemText.includes(query) ? '' : 'none';
-                }
-            } else {
-                // Если запрос содержит меньше 3 символов, показываем все элементы
-                for (let i = 0; i < listItems.length; i++) {
+                } else {
+                    // Если запрос меньше 3 символов, показываем все элементы
                     listItems[i].style.display = '';
                 }
+
+                // Проверяем, есть ли видимые элементы
+                if (listItems[i].style.display !== 'none') {
+                    hasVisibleItems = true;
+                }
             }
+
+            // Открываем дропдаун, если есть видимые элементы
+            list.style.display = hasVisibleItems ? 'block' : 'none';
         } else {
             // Если запрос пустой, скрываем кнопку очистки и показываем все элементы
             clearInput.style.display = 'none';
             for (let i = 0; i < listItems.length; i++) {
                 listItems[i].style.display = '';
             }
+            list.style.display = 'none'; // Скрываем дропдаун
         }
     });
 }
+
 
 
 //Очистить значение поиска и показать все элементы списка, когда пользователь нажимает кнопку очистки.
