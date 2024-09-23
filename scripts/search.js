@@ -132,17 +132,18 @@ searchInput.addEventListener('input', function() {
     let filteredRecipes = [];
 
     if (queryMain.length >= 3) {
-        // If the query length is more then 3 characters, filter by the main query
+        // If the query length is more than 3 characters, filter by the main query
         filteredRecipes = filterRecipes(queryMain, recipes);
         // Apply additional filters
         filteredRecipes = filterByAdditionalFilters(filteredRecipes);
+/* // баг
         const ingredients = getRecipeData(filteredRecipes, recipe => recipe.ingredients.map(ing => ing.ingredient));
         createDropdownList(ingredients, 'ingredients-list', 'ingredients-btn', 'ingredients-dropdown', 'ingredients-arrow');
         const appliances = getRecipeData(filteredRecipes, recipe => recipe.appliance);
         createDropdownList(appliances, 'appliance-list', 'appliance-btn', 'appliance-dropdown', 'appliance-arrow');
         const ustensils = getRecipeData(filteredRecipes, recipe => recipe.ustensils);
         createDropdownList(ustensils, 'ustensils-list', 'ustensils-btn', 'ustensils-dropdown', 'ustensils-arrow');
-        
+        */
     } else {
         // If the query length is less than 3 characters, show all recipes
         filteredRecipes = recipes;
@@ -150,6 +151,7 @@ searchInput.addEventListener('input', function() {
 
     displayResults(filteredRecipes);
 });
+
 
 // Function for setting up search in lists
 function setupSearchInput(inputId, listId, clearInputId) {
@@ -270,24 +272,32 @@ function addSelectedItem(filterType, selectedItem) {
     closeSpan.textContent = 'close';
 
     // Удаляем элемент при клике на 'close'
+    // Удаляем элемент при клике на 'close'
     closeSpan.addEventListener('click', () => {
         newItem.remove();  // Удаляем элемент из DOM
-        
-        // Очистка фильтра и поля поиска
+
+    // Получаем тип фильтра
+        const filterType = newItem.getAttribute('data-target');
+
+    // Удаляем элемент из выбранных фильтров
+        selectedFilters[filterType].splice(selectedFilters[filterType].indexOf(selectedItem), 1);
+
+    // Очистка поля поиска
         const inputElement = document.getElementById(`${filterType.replace('-btn', '')}-search`);
         inputElement.value = '';  // Очищаем соответствующее поле поиска
 
-        clearSelectedFilters(filterType);  // Очищаем выбранные фильтры
-
+    // Обновляем отображение рецептов
         const query = searchInput.value.toLowerCase();
         let filteredResults = filterRecipes(query, recipes);
-        
-        // Обновляем отображение рецептов
-        if (query.length >= 3) {
+
+    // Применяем дополнительные фильтры, если они установлены
+        if (selectedFilters.ingredients.length || selectedFilters.appliance.length || selectedFilters.ustensils.length) {
             filteredResults = filterByAdditionalFilters(filteredResults);
         }
+
         displayResults(filteredResults);  // Обновляем отображение рецептов
     });
+
 
     newItem.appendChild(paragraph);
     newItem.appendChild(closeSpan);
@@ -340,9 +350,10 @@ function setupListClickListener(listId, selectedItemId, dropdownId, filterField,
 */
             // Добавляем элемент в список выбранных
             addSelectedItem(buttonId, selectedItem);
-
+            
             // Скрываем выпадающий список
             document.getElementById(dropdownId).style.display = 'none';
+
         }
     });
 }
