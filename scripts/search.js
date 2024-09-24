@@ -157,14 +157,14 @@ searchInput.addEventListener('input', function() {
         filteredRecipes = filterRecipes(queryMain, recipes);
         // Apply additional filters
         filteredRecipes = filterByAdditionalFilters(filteredRecipes);
-       /* //баг
+       
         const ingredients = getRecipeData(filteredRecipes, recipe => recipe.ingredients.map(ing => ing.ingredient));
         createDropdownList(ingredients, 'ingredients-list', 'ingredients-btn', 'ingredients-dropdown', 'ingredients-arrow');
         const appliances = getRecipeData(filteredRecipes, recipe => recipe.appliance);
         createDropdownList(appliances, 'appliance-list', 'appliance-btn', 'appliance-dropdown', 'appliance-arrow');
         const ustensils = getRecipeData(filteredRecipes, recipe => recipe.ustensils);
         createDropdownList(ustensils, 'ustensils-list', 'ustensils-btn', 'ustensils-dropdown', 'ustensils-arrow');
-        */
+        
     } else {
         // If the query length is less than 3 characters, show all recipes
         filteredRecipes = recipes;
@@ -320,19 +320,6 @@ function addSelectedItem(filterType, selectedItem) {
     container.appendChild(newItem);
     newItem.style.display = 'flex';
 }
-
-/*
-// Функция для обновления отображения после закрытия элемента
-function updateDisplayAfterClose() {
-    const query = searchInput.value.toLowerCase();
-    let filteredResults = filterRecipes(query, recipes);
-    if (query.length >= 3) {
-        filteredResults = filterByAdditionalFilters(filteredResults);
-    } else if (selectedFilters.ingredients.length || selectedFilters.appliance.length || selectedFilters.ustensils.length) {
-        filteredResults = filterByAdditionalFilters(filteredResults);
-    }
-    displayResults(filteredResults);
-}*/
 
 
 // Function for setting up a click on a filter list КЛИК ПО Ингредиенту
