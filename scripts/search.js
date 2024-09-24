@@ -20,7 +20,7 @@ export function displayResults(filteredRecipes) {
         const recipe = filteredRecipes[i];
         const card = recipeCardElementDOM(recipe);
         searchResults.appendChild(card);
-        currentDisplayedRecipes.push(recipe);
+        currentDisplayedRecipes[currentDisplayedRecipes.length] = recipe;
     }
     
     updateNumberOfRecipes(filteredRecipes.length);
@@ -40,22 +40,43 @@ export function filterRecipes(query, allRecipes) {
         const recipe = allRecipes[i];
         const recipeName = recipe.name.toLowerCase();
         const recipeDescription = recipe.description.toLowerCase();
-        let matches = recipeName.includes(query) ||
-                      recipeDescription.includes(query);
-
+        
+        let matches = false;
+    
+        // Проверяем, содержится ли `query` в `recipeName`
+        for (let i = 0; matches !== true && i <= recipeName.length - query.length; i++) {
+            if (recipeName.substr(i, query.length) === query) {
+                matches = true;
+            }
+        }
+    
+        // Если `recipeName` не содержит `query`, проверяем `recipeDescription`
         if (!matches) {
-            for (let j = 0; matches !== true && j < recipe.ingredients.length; j++) {
-                if (recipe.ingredients[j].ingredient.toLowerCase().includes(query)) {
+            for (let i = 0; matches !== true && i <= recipeDescription.length - query.length; i++) {
+                if (recipeDescription.substr(i, query.length) === query) {
                     matches = true;
                 }
             }
         }
-
+    
+        // Если нет совпадений по имени и описанию, проверяем ингредиенты
+        if (!matches) {
+            for (let j = 0; matches !== true && j < recipe.ingredients.length; j++) {
+                const ingredient = recipe.ingredients[j].ingredient.toLowerCase();
+                for (let k = 0; matches !== true && k <= ingredient.length - query.length; k++) {
+                    if (ingredient.substr(k, query.length) === query) {
+                        matches = true;
+                    }
+                }
+            }
+        }
+    
+        // Добавляем отфильтрованные рецепты
         if (matches) {
-            filteredRecipes.push(recipe);
+            filteredRecipes[filteredRecipes.length] = recipe;
         }
     }
-
+    
     // После того, как рецепты отфильтрованы, обновляем списки дропдаунов:
     const ingredients = getRecipeData(filteredRecipes, recipe => recipe.ingredients.map(ing => ing.ingredient));
     createDropdownList(ingredients, 'ingredients-list', 'ingredients-btn', 'ingredients-dropdown', 'ingredients-arrow');
@@ -78,52 +99,88 @@ export function filterByAdditionalFilters(filteredRecipes) {
         const recipe = filteredRecipes[i];
         let matches = true;
 
-        // Check ingredients
-        for (let j = 0; matches !== false && j < selectedFilters.ingredients.length; j++) {
+        // Проверка ингредиентов
+        for (let j = 0; matches && j < selectedFilters.ingredients.length; j++) {
             const filter = selectedFilters.ingredients[j];
             let ingredientMatch = false;
-            for (let k = 0; ingredientMatch !== true && k < recipe.ingredients.length; k++) {
-                if (recipe.ingredients[k].ingredient.toLowerCase() === filter) {
+
+            for (let k = 0; k < recipe.ingredients.length && !ingredientMatch; k++) {
+                const ingredient = recipe.ingredients[k].ingredient.toLowerCase();
+                
+                // Проверка, содержится ли фильтр в названии ингредиента
+                if (ingredient === filter) {
                     ingredientMatch = true;
                 }
             }
-            if (!ingredientMatch) {
-                matches = false;
-            }
+
+            // Если хотя бы один ингредиент не совпал, прекращаем проверку
+            matches = ingredientMatch;
         }
 
-        // Check appliance
+        // Проверка прибора
         if (matches) {
-            for (let j = 0; matches !== false && j < selectedFilters.appliance.length; j++) {
-                if (recipe.appliance.toLowerCase() !== selectedFilters.appliance[j]) {
-                    matches = false;
+            for (let j = 0; matches && j < selectedFilters.appliance.length; j++) {
+                let applianceMatch = true;
+
+                const applianceFilter = selectedFilters.appliance[j];
+                const recipeAppliance = recipe.appliance.toLowerCase();
+
+                // Проверка совпадения прибора
+                for (let k = 0; k < recipeAppliance.length && applianceMatch; k++) {
+                    if (recipeAppliance[k] !== applianceFilter[k]) {
+                        applianceMatch = false;
+                    }
                 }
+
+                matches = applianceMatch;
             }
         }
 
-        // Check utensils
+        // Проверка утвари
         if (matches) {
-            for (let j = 0; matches !== false && j < selectedFilters.ustensils.length; j++) {
-                if (!recipe.ustensils.includes(selectedFilters.ustensils[j])) {
-                    matches = false;
+            for (let j = 0; matches && j < selectedFilters.ustensils.length; j++) {
+                const filterUstensil = selectedFilters.ustensils[j];
+                let utensilMatch = false;
+
+                // Проверка совпадения утвари
+                for (let k = 0; k < recipe.ustensils.length && !utensilMatch; k++) {
+                    if (recipe.ustensils[k] === filterUstensil) {
+                        utensilMatch = true;
+                    }
                 }
+
+                matches = utensilMatch;
             }
         }
 
+        // Добавление рецепта, если все фильтры совпали
         if (matches) {
-            refinedRecipes.push(recipe);
+            refinedRecipes[refinedRecipes.length] = recipe;
         }
     }
-    
+
     return refinedRecipes;
 }
 
+
 export function updateSelectedFilters(field, filterValue) {
-    if (!selectedFilters[field].includes(filterValue)) {
-        selectedFilters[field].push(filterValue);
+    let filterExists = false;
+
+    // Проходим по массиву фильтров и проверяем, есть ли уже такой фильтр
+    for (let i = 0; i < selectedFilters[field].length; i++) {
+        if (selectedFilters[field][i] === filterValue) {
+            filterExists = true;
+            break;
+        }
+    }
+
+    // Если фильтр не найден, добавляем его в массив
+    if (!filterExists) {
+        selectedFilters[field][selectedFilters[field].length] = filterValue;
         console.log(`Добавлено: ${filterValue} в фильтр: ${field}`);  // Лог для проверки
     }
 }
+
 
 export function clearSelectedFilters(field, filterValue) {
     // Проверка на наличие поля в объекте selectedFilters
@@ -133,7 +190,15 @@ export function clearSelectedFilters(field, filterValue) {
     }
 
     // Найдем индекс удаляемого значения
-    const index = selectedFilters[field].indexOf(filterValue);
+    let index = -1; // По умолчанию предполагаем, что элемента нет
+
+    // Цикл для поиска индекса элемента в массиве
+    for (let i = 0; i < selectedFilters[field].length && index === -1; i++) {
+        if (selectedFilters[field][i] === filterValue) {
+            index = i; // Сохраняем индекс, если элемент найден
+        }
+    }
+
 
     // Проверим, что индекс фильтра найден и он существует в массиве
     if (index > -1) {
@@ -141,7 +206,6 @@ export function clearSelectedFilters(field, filterValue) {
         selectedFilters[field].splice(index, 1);
     }
 
-    console.log(`Filter after removal: ${field} - ${JSON.stringify(selectedFilters[field])}`);  // Лог для проверки
 }
 
 // Main search by query
@@ -180,7 +244,7 @@ function setupSearchInput(inputId, listId, clearInputId) {
     const list = document.getElementById(listId);
     const clearInput = document.getElementById(clearInputId);
 
-    // Add input event
+    // Добавляем обработчик события input
     searchInput.addEventListener('input', function () {
         const query = searchInput.value.toLowerCase();
         const listItems = list.querySelectorAll('li');
@@ -193,9 +257,19 @@ function setupSearchInput(inputId, listId, clearInputId) {
             // Фильтруем элементы списка
             for (let i = 0; i < listItems.length; i++) {
                 const itemText = listItems[i].textContent.toLowerCase();
+                let match = false;
+
+                // Проверяем, содержится ли подстрока `query` в `itemText`
+                for (let j = 0; j <= itemText.length - query.length; j++) {
+                    if (itemText.substr(j, query.length) === query) {
+                        match = true;
+                        break;
+                    }
+                }
+
                 if (query.length >= 3) {
                     // Показываем элемент, если он соответствует запросу
-                    listItems[i].style.display = itemText.includes(query) ? '' : 'none';
+                    listItems[i].style.display = match ? '' : 'none';
                 } else {
                     // Если запрос меньше 3 символов, показываем все элементы
                     listItems[i].style.display = '';
@@ -219,6 +293,7 @@ function setupSearchInput(inputId, listId, clearInputId) {
         }
     });
 }
+
 
 
 
@@ -295,23 +370,27 @@ function addSelectedItem(filterType, selectedItem) {
 
     closeSpan.addEventListener('click', () => {
         console.log('Close button clicked');
+        
         newItem.remove();
 
         console.log(`Removing filter: ${filterField} - ${selectedItem}`);
         clearSelectedFilters(filterField, selectedItem);  // Передаем правильное имя поля в selectedFilters
 
         console.log('Updated filters:', JSON.stringify(selectedFilters));
-
+        
         const searchInput = document.getElementById('input_field');
         const query = searchInput ? searchInput.value.toLowerCase() : '';
+        
         let filteredResults = filterRecipes(query, recipes);
-
+        
         if (selectedFilters.ingredients.length || selectedFilters.appliance.length || selectedFilters.ustensils.length) {
             filteredResults = filterByAdditionalFilters(filteredResults);
         }
 
         console.log('Filtered results:', filteredResults);
         displayResults(filteredResults);
+
+    
     });
 
     newItem.appendChild(paragraph);
