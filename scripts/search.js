@@ -1,6 +1,6 @@
 import { recipes } from "./data/recipes.js";
 import { recipeCardElementDOM } from "./functions/recipeCardElementDOM.js";
-import { getRecipeData, createDropdownList } from "./functions/createDropdownList.js";
+import { getRecipeData, createDropdownList, setupDropdown } from "./functions/createDropdownList.js";
 
 let currentDisplayedRecipes = [];
 const searchResults = document.getElementById('recipes_section');
@@ -390,6 +390,9 @@ function addSelectedItem(filterType, selectedItem) {
         console.log('Filtered results:', filteredResults);
         displayResults(filteredResults);
 
+        setupDropdown('ingredients-btn', 'ingredients-dropdown', 'ingredients-arrow');
+        setupDropdown('appliance-btn', 'appliance-dropdown', 'appliance-arrow');
+        setupDropdown('ustensils-btn', 'ustensils-dropdown', 'ustensils-arrow');
     
     });
 

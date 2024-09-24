@@ -38,7 +38,7 @@ export function createDropdownList(items, listElementId, dropdownBtnId, dropdown
 }
 
 //управляем поведением
-function setupDropdown(dropdownBtnId, dropdownElementId, arrowIconId) {
+export function setupDropdown(dropdownBtnId, dropdownElementId, arrowIconId) {
     const dropdownBtn = document.getElementById(dropdownBtnId);
     const dropdownElement = document.getElementById(dropdownElementId);
     const arrowIcon = document.getElementById(arrowIconId);
