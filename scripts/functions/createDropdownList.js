@@ -1,32 +1,19 @@
 //получаем данные
 export function getRecipeData(recipes, dataExtractor) {
-    const data = [];
-    // Проходим по каждому рецепту
-    for (let i = 0; i < recipes.length; i++) {
-        const recipe = recipes[i];
+    return recipes.reduce((data, recipe) => {
         const extractedData = dataExtractor(recipe);
-        // Если extractedData — это массив (например, для ингредиентов или утвари), добавляем все элементы
-        if (Array.isArray(extractedData)) {
-            for (let j = 0; j < extractedData.length; j++) {
-                data.push(extractedData[j]);
-            }
-        } else {
-            // Если это одиночное значение (например, для прибора), добавляем его напрямую
-            data.push(extractedData);
-        }
-    }
-    return data;
+        return data.concat(Array.isArray(extractedData) ? extractedData : [extractedData]);
+    }, []);
 }
+
 
 //создаем лист
 export function createDropdownList(items, listElementId, dropdownBtnId, dropdownElementId, arrowIconId) {
-    const uniqueItems = new Set(items);  // Создаем уникальный набор элементов
+    const uniqueItems = [...new Set(items)];  // Преобразуем Set обратно в массив
     const ulElement = document.getElementById(listElementId);  // Ссылка на элемент списка
 
-    // Очищаем список перед добавлением новых элементов
-    ulElement.innerHTML = '';
+    ulElement.innerHTML = '';  // Очищаем список перед добавлением новых элементов
 
-    // Добавляем элементы в список
     uniqueItems.forEach(item => {
         const li = document.createElement('li');
         li.textContent = item;
@@ -36,6 +23,7 @@ export function createDropdownList(items, listElementId, dropdownBtnId, dropdown
     // Универсальная функция для управления dropdown'ами
     setupDropdown(dropdownBtnId, dropdownElementId, arrowIconId);
 }
+
 
 //управляем поведением
 export function setupDropdown(dropdownBtnId, dropdownElementId, arrowIconId) {
@@ -84,11 +72,11 @@ function setupClearInput() {
                 listItems.forEach(item => {
                     item.style.display = '';  // Показываем все элементы
                 });
-
             }
         });
     });
 }
+
 
 
 // Вызываем универсальную функцию для всех кнопок

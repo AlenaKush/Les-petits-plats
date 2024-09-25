@@ -15,16 +15,17 @@ let selectedFilters = {
 //Function for displaying search results
 export function displayResults(filteredRecipes) {
     searchResults.innerHTML = '';
-    currentDisplayedRecipes.length = 0;
-    for (let i = 0; i < filteredRecipes.length; i++) {
-        const recipe = filteredRecipes[i];
+    currentDisplayedRecipes = [];  // Очищаем текущий массив отображаемых рецептов
+
+    filteredRecipes.forEach(recipe => {
         const card = recipeCardElementDOM(recipe);
         searchResults.appendChild(card);
-        currentDisplayedRecipes[currentDisplayedRecipes.length] = recipe;
-    }
-    
-    updateNumberOfRecipes(filteredRecipes.length);
+        currentDisplayedRecipes.push(recipe);  // Добавляем рецепт в массив
+    });
+
+    updateNumberOfRecipes(filteredRecipes.length);  // Обновляем количество отображаемых рецептов
 }
+
 
 //function to update the number of displayed recipes
 export function updateNumberOfRecipes(count) {
@@ -32,50 +33,23 @@ export function updateNumberOfRecipes(count) {
     numberRecipes.textContent = count + (count > 1 ? ' recettes' : ' recette');
 }
 
-//filter recipes
+// Filter recipes
 export function filterRecipes(query, allRecipes) {
-    const filteredRecipes = [];
-
-    for (let i = 0; i < allRecipes.length; i++) {
-        const recipe = allRecipes[i];
+    const filteredRecipes = allRecipes.filter(recipe => {
         const recipeName = recipe.name.toLowerCase();
         const recipeDescription = recipe.description.toLowerCase();
         
-        let matches = false;
+        let matches = recipeName.includes(query) || recipeDescription.includes(query);
     
-        // Проверяем, содержится ли `query` в `recipeName`
-        for (let i = 0; matches !== true && i <= recipeName.length - query.length; i++) {
-            if (recipeName.substr(i, query.length) === query) {
-                matches = true;
-            }
-        }
-    
-        // Если `recipeName` не содержит `query`, проверяем `recipeDescription`
+        // Если совпадений нет в названии или описании, проверяем ингредиенты
         if (!matches) {
-            for (let i = 0; matches !== true && i <= recipeDescription.length - query.length; i++) {
-                if (recipeDescription.substr(i, query.length) === query) {
-                    matches = true;
-                }
-            }
+            matches = recipe.ingredients.some(ingredientObj => 
+                ingredientObj.ingredient.toLowerCase().includes(query)
+            );
         }
-    
-        // Если нет совпадений по имени и описанию, проверяем ингредиенты
-        if (!matches) {
-            for (let j = 0; matches !== true && j < recipe.ingredients.length; j++) {
-                const ingredient = recipe.ingredients[j].ingredient.toLowerCase();
-                for (let k = 0; matches !== true && k <= ingredient.length - query.length; k++) {
-                    if (ingredient.substr(k, query.length) === query) {
-                        matches = true;
-                    }
-                }
-            }
-        }
-    
-        // Добавляем отфильтрованные рецепты
-        if (matches) {
-            filteredRecipes[filteredRecipes.length] = recipe;
-        }
-    }
+
+        return matches;
+    });
     
     // После того, как рецепты отфильтрованы, обновляем списки дропдаунов:
     const ingredients = getRecipeData(filteredRecipes, recipe => recipe.ingredients.map(ing => ing.ingredient));
@@ -90,96 +64,51 @@ export function filterRecipes(query, allRecipes) {
     return filteredRecipes;
 }
 
-
-//refined filtration
+// Refined filtration
 export function filterByAdditionalFilters(filteredRecipes) {
-    const refinedRecipes = [];
-
-    for (let i = 0; i < filteredRecipes.length; i++) {
-        const recipe = filteredRecipes[i];
+    return filteredRecipes.filter(recipe => {
         let matches = true;
 
         // Проверка ингредиентов
-        for (let j = 0; matches && j < selectedFilters.ingredients.length; j++) {
-            const filter = selectedFilters.ingredients[j];
-            let ingredientMatch = false;
-
-            for (let k = 0; k < recipe.ingredients.length && !ingredientMatch; k++) {
-                const ingredient = recipe.ingredients[k].ingredient.toLowerCase();
-                
-                // Проверка, содержится ли фильтр в названии ингредиента
-                if (ingredient === filter) {
-                    ingredientMatch = true;
-                }
-            }
-
-            // Если хотя бы один ингредиент не совпал, прекращаем проверку
-            matches = ingredientMatch;
+        if (selectedFilters.ingredients.length > 0) {
+            matches = selectedFilters.ingredients.every(filter => 
+                recipe.ingredients.some(ingredientObj => 
+                    ingredientObj.ingredient.toLowerCase() === filter
+                )
+            );
         }
 
         // Проверка прибора
-        if (matches) {
-            for (let j = 0; matches && j < selectedFilters.appliance.length; j++) {
-                let applianceMatch = true;
-
-                const applianceFilter = selectedFilters.appliance[j];
-                const recipeAppliance = recipe.appliance.toLowerCase();
-
-                // Проверка совпадения прибора
-                for (let k = 0; k < recipeAppliance.length && applianceMatch; k++) {
-                    if (recipeAppliance[k] !== applianceFilter[k]) {
-                        applianceMatch = false;
-                    }
-                }
-
-                matches = applianceMatch;
-            }
+        if (matches && selectedFilters.appliance.length > 0) {
+            matches = selectedFilters.appliance.every(applianceFilter => 
+                recipe.appliance.toLowerCase() === applianceFilter
+            );
         }
 
         // Проверка утвари
-        if (matches) {
-            for (let j = 0; matches && j < selectedFilters.ustensils.length; j++) {
-                const filterUstensil = selectedFilters.ustensils[j];
-                let utensilMatch = false;
-
-                // Проверка совпадения утвари
-                for (let k = 0; k < recipe.ustensils.length && !utensilMatch; k++) {
-                    if (recipe.ustensils[k] === filterUstensil) {
-                        utensilMatch = true;
-                    }
-                }
-
-                matches = utensilMatch;
-            }
+        if (matches && selectedFilters.ustensils.length > 0) {
+            matches = selectedFilters.ustensils.every(filterUstensil => 
+                recipe.ustensils.some(ustensil => 
+                    ustensil.toLowerCase() === filterUstensil
+                )
+            );
         }
 
-        // Добавление рецепта, если все фильтры совпали
-        if (matches) {
-            refinedRecipes[refinedRecipes.length] = recipe;
-        }
-    }
-
-    return refinedRecipes;
+        return matches;  // Возвращаем true, если все фильтры совпадают
+    });
 }
+
 
 
 export function updateSelectedFilters(field, filterValue) {
-    let filterExists = false;
-
-    // Проходим по массиву фильтров и проверяем, есть ли уже такой фильтр
-    for (let i = 0; i < selectedFilters[field].length; i++) {
-        if (selectedFilters[field][i] === filterValue) {
-            filterExists = true;
-            break;
-        }
-    }
-
-    // Если фильтр не найден, добавляем его в массив
-    if (!filterExists) {
-        selectedFilters[field][selectedFilters[field].length] = filterValue;
+    // Проверяем, существует ли уже такой фильтр
+    if (!selectedFilters[field].includes(filterValue)) {
+        // Если фильтра нет, добавляем его в массив
+        selectedFilters[field].push(filterValue);
         console.log(`Добавлено: ${filterValue} в фильтр: ${field}`);  // Лог для проверки
     }
 }
+
 
 
 export function clearSelectedFilters(field, filterValue) {
@@ -189,23 +118,14 @@ export function clearSelectedFilters(field, filterValue) {
         return;
     }
 
-    // Найдем индекс удаляемого значения
-    let index = -1; // По умолчанию предполагаем, что элемента нет
+    // Находим индекс удаляемого значения
+    const index = selectedFilters[field].indexOf(filterValue);
 
-    // Цикл для поиска индекса элемента в массиве
-    for (let i = 0; i < selectedFilters[field].length && index === -1; i++) {
-        if (selectedFilters[field][i] === filterValue) {
-            index = i; // Сохраняем индекс, если элемент найден
-        }
-    }
-
-
-    // Проверим, что индекс фильтра найден и он существует в массиве
+    // Проверим, что индекс фильтра найден
     if (index > -1) {
-        // Удалим элемент из массива фильтров
+        // Удаляем элемент из массива фильтров
         selectedFilters[field].splice(index, 1);
     }
-
 }
 
 // Main search by query
@@ -255,44 +175,37 @@ function setupSearchInput(inputId, listId, clearInputId) {
             let hasVisibleItems = false;
 
             // Фильтруем элементы списка
-            for (let i = 0; i < listItems.length; i++) {
-                const itemText = listItems[i].textContent.toLowerCase();
-                let match = false;
-
-                // Проверяем, содержится ли подстрока `query` в `itemText`
-                for (let j = 0; j <= itemText.length - query.length; j++) {
-                    if (itemText.substr(j, query.length) === query) {
-                        match = true;
-                        break;
-                    }
-                }
+            listItems.forEach(item => {
+                const itemText = item.textContent.toLowerCase();
+                const match = itemText.includes(query);
 
                 if (query.length >= 3) {
                     // Показываем элемент, если он соответствует запросу
-                    listItems[i].style.display = match ? '' : 'none';
+                    item.style.display = match ? '' : 'none';
                 } else {
                     // Если запрос меньше 3 символов, показываем все элементы
-                    listItems[i].style.display = '';
+                    item.style.display = '';
                 }
 
                 // Проверяем, есть ли видимые элементы
-                if (listItems[i].style.display !== 'none') {
+                if (item.style.display !== 'none') {
                     hasVisibleItems = true;
                 }
-            }
+            });
 
             // Открываем дропдаун, если есть видимые элементы
             list.style.display = hasVisibleItems ? 'block' : 'none';
         } else {
             // Если запрос пустой, скрываем кнопку очистки и показываем все элементы
             clearInput.style.display = 'none';
-            for (let i = 0; i < listItems.length; i++) {
-                listItems[i].style.display = '';
-            }
+            listItems.forEach(item => {
+                item.style.display = '';
+            });
             list.style.display = 'none'; // Скрываем дропдаун
         }
     });
 }
+
 
 
 
@@ -310,12 +223,12 @@ function setupClearButton(inputId, clearInputId) {
 
         // Показ всех элементов списка
         const list = document.getElementById(inputId.replace('-search', '-list'));
-        const listItems = list.getElementsByTagName('li'); // Получаем все элементы <li>
+        const listItems = Array.from(list.getElementsByTagName('li')); // Преобразуем коллекцию в массив
 
         // Устанавливаем стиль display в '' для всех элементов списка
-        for (let i = 0; i < listItems.length; i++) {
-            listItems[i].style.display = ''; // Показ всех элементов
-        }
+        listItems.forEach(item => {
+            item.style.display = ''; // Показ всех элементов
+        });
 
         // Применение фильтров к полному списку рецептов
         let filteredResults = recipes; // Показать все рецепты
@@ -329,6 +242,7 @@ function setupClearButton(inputId, clearInputId) {
         displayResults(filteredResults);
     });
 }
+
 
 
 
