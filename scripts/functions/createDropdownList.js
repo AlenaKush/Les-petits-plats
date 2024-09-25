@@ -1,11 +1,19 @@
+//получаем данные
+export function getRecipeData(recipes, dataExtractor) {
+    return recipes.reduce((data, recipe) => {
+        const extractedData = dataExtractor(recipe);
+        return data.concat(Array.isArray(extractedData) ? extractedData : [extractedData]);
+    }, []);
+}
+
+
+//создаем лист
 export function createDropdownList(items, listElementId, dropdownBtnId, dropdownElementId, arrowIconId) {
-    const uniqueItems = new Set(items);  // Создаем уникальный набор элементов
+    const uniqueItems = [...new Set(items)];  // Преобразуем Set обратно в массив
     const ulElement = document.getElementById(listElementId);  // Ссылка на элемент списка
 
-    // Очищаем список перед добавлением новых элементов
-    ulElement.innerHTML = '';
+    ulElement.innerHTML = '';  // Очищаем список перед добавлением новых элементов
 
-    // Добавляем элементы в список
     uniqueItems.forEach(item => {
         const li = document.createElement('li');
         li.textContent = item;
@@ -16,7 +24,9 @@ export function createDropdownList(items, listElementId, dropdownBtnId, dropdown
     setupDropdown(dropdownBtnId, dropdownElementId, arrowIconId);
 }
 
-function setupDropdown(dropdownBtnId, dropdownElementId, arrowIconId) {
+
+//управляем поведением
+export function setupDropdown(dropdownBtnId, dropdownElementId, arrowIconId) {
     const dropdownBtn = document.getElementById(dropdownBtnId);
     const dropdownElement = document.getElementById(dropdownElementId);
     const arrowIcon = document.getElementById(arrowIconId);
@@ -62,12 +72,13 @@ function setupClearInput() {
                 listItems.forEach(item => {
                     item.style.display = '';  // Показываем все элементы
                 });
-
             }
         });
     });
 }
 
 
+
 // Вызываем универсальную функцию для всех кнопок
 setupClearInput();
+
