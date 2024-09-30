@@ -3,7 +3,7 @@ import { createDropdownList, getRecipeData } from './functions/createDropdownLis
 import { displayResults } from './search.js';
 
 
-// Используем универсальную функцию для получения данных и создания списков
+// Use a generic function to get data and create lists
 const ingredients = getRecipeData(recipes, recipe => recipe.ingredients.map(ing => ing.ingredient));
 createDropdownList(ingredients, 'ingredients-list', 'ingredients-btn', 'ingredients-dropdown', 'ingredients-arrow');
 

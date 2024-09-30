@@ -1,4 +1,4 @@
-//получаем данные
+//get data
 export function getRecipeData(recipes, dataExtractor) {
     return recipes.reduce((data, recipe) => {
         const extractedData = dataExtractor(recipe);
@@ -7,12 +7,12 @@ export function getRecipeData(recipes, dataExtractor) {
 }
 
 
-//создаем лист
+//create elements of dropdown list
 export function createDropdownList(items, listElementId, dropdownBtnId, dropdownElementId, arrowIconId) {
-    const uniqueItems = [...new Set(items)];  // Преобразуем Set обратно в массив
-    const ulElement = document.getElementById(listElementId);  // Ссылка на элемент списка
+    const uniqueItems = [...new Set(items)];  // Convert Set back to array
+    const ulElement = document.getElementById(listElementId); // Reference to the list item
 
-    ulElement.innerHTML = '';  // Очищаем список перед добавлением новых элементов
+    ulElement.innerHTML = '';
 
     uniqueItems.forEach(item => {
         const li = document.createElement('li');
@@ -20,20 +20,18 @@ export function createDropdownList(items, listElementId, dropdownBtnId, dropdown
         ulElement.appendChild(li);
     });
 
-    // Универсальная функция для управления dropdown'ами
     setupDropdown(dropdownBtnId, dropdownElementId, arrowIconId);
 }
 
 
-//управляем поведением
+//manage visibility
 export function setupDropdown(dropdownBtnId, dropdownElementId, arrowIconId) {
     const dropdownBtn = document.getElementById(dropdownBtnId);
     const dropdownElement = document.getElementById(dropdownElementId);
     const arrowIcon = document.getElementById(arrowIconId);
 
-    // Управляем видимостью выпадающего списка по клику на кнопку
     dropdownBtn.addEventListener('click', function (event) {
-        event.stopPropagation();  // Предотвращаем закрытие при клике на кнопку
+        event.stopPropagation();  //Prevent closing when clicking a button
         
         if (dropdownElement.style.display === 'none' || dropdownElement.style.display === '') {
             dropdownElement.style.display = 'block';
@@ -44,7 +42,7 @@ export function setupDropdown(dropdownBtnId, dropdownElementId, arrowIconId) {
         }
     });
 
-    // Скрываем дропдаун при клике вне его области
+    // Hide the dropdown when clicking outside its area
     document.addEventListener('click', function (event) {
         if (!dropdownElement.contains(event.target) && event.target !== dropdownBtn) {
             dropdownElement.style.display = 'none';
@@ -53,9 +51,9 @@ export function setupDropdown(dropdownBtnId, dropdownElementId, arrowIconId) {
     });
 }
 
-// Универсальная функция для очистки полей ввода и сброса списка элементов
+//function to clear input fields and reset the list of elements
 function setupClearInput() {
-    const clearIcons = document.querySelectorAll('.clear-input');  // Находим все иконки очистки
+    const clearIcons = document.querySelectorAll('.clear-input');  //Find all cleaning icons
 
     clearIcons.forEach(icon => {
         icon.addEventListener('click', (event) => {
@@ -64,21 +62,17 @@ function setupClearInput() {
             const dropdownId = inputElement.parentElement.querySelector('ul').id;
 
             if (inputElement) {
-                // Очищаем поле ввода
                 inputElement.value = '';
 
-                // Показываем все элементы списка
+                // Show all list items
                 const listItems = document.querySelectorAll(`#${dropdownId} li`);
                 listItems.forEach(item => {
-                    item.style.display = '';  // Показываем все элементы
+                    item.style.display = '';  // Show all list items
                 });
             }
         });
     });
 }
 
-
-
-// Вызываем универсальную функцию для всех кнопок
 setupClearInput();
 

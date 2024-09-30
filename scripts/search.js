@@ -15,15 +15,15 @@ let selectedFilters = {
 // Function for displaying search results
 export function displayResults(filteredRecipes) {
     searchResults.innerHTML = '';
-    currentDisplayedRecipes = [];  // Очищаем текущий массив отображаемых рецептов
+    currentDisplayedRecipes = []; 
 
     filteredRecipes.forEach(recipe => {
         const card = recipeCardElementDOM(recipe);
         searchResults.appendChild(card);
-        currentDisplayedRecipes.push(recipe);  // Добавляем рецепт в массив
+        currentDisplayedRecipes.push(recipe);  // Add the recipe to the array
     });
 
-    updateNumberOfRecipes(filteredRecipes.length);  // Обновляем количество отображаемых рецептов
+    updateNumberOfRecipes(filteredRecipes.length);  
 }
 
 
@@ -41,7 +41,7 @@ export function filterRecipes(query, allRecipes) {
         
         let matches = recipeName.includes(query) || recipeDescription.includes(query);
     
-        // Если совпадений нет в названии или описании, проверяем ингредиенты
+        //If there are no matches in the name or description, check the ingredients
         if (!matches) {
             matches = recipe.ingredients.some(ingredientObj => 
                 ingredientObj.ingredient.toLowerCase().includes(query)
@@ -51,7 +51,7 @@ export function filterRecipes(query, allRecipes) {
         return matches;
     });
     
-    // После того, как рецепты отфильтрованы, обновляем списки дропдаунов:
+    
     const ingredients = getRecipeData(filteredRecipes, recipe => recipe.ingredients.map(ing => ing.ingredient));
     createDropdownList(ingredients, 'ingredients-list', 'ingredients-btn', 'ingredients-dropdown', 'ingredients-arrow');
  
@@ -69,7 +69,7 @@ export function filterByAdditionalFilters(filteredRecipes) {
     return filteredRecipes.filter(recipe => {
         let matches = true;
 
-        // Проверка ингредиентов
+        // Checking ingredients
         if (selectedFilters.ingredients.length > 0) {
             matches = selectedFilters.ingredients.every(filter => 
                 recipe.ingredients.some(ingredientObj => 
@@ -78,14 +78,14 @@ export function filterByAdditionalFilters(filteredRecipes) {
             );
         }
 
-        // Проверка прибора
+        // Checking appliance
         if (matches && selectedFilters.appliance.length > 0) {
             matches = selectedFilters.appliance.every(applianceFilter => 
                 recipe.appliance.toLowerCase() === applianceFilter
             );
         }
 
-        // Проверка утвари
+        // Checking utensils
         if (matches && selectedFilters.ustensils.length > 0) {
             matches = selectedFilters.ustensils.every(filterUstensil => 
                 recipe.ustensils.some(ustensil => 
@@ -94,36 +94,28 @@ export function filterByAdditionalFilters(filteredRecipes) {
             );
         }
 
-        return matches;  // Возвращаем true, если все фильтры совпадают
+        return matches;  
     });
 }
 
 
 
 export function updateSelectedFilters(field, filterValue) {
-    // Проверяем, существует ли уже такой фильтр
     if (!selectedFilters[field].includes(filterValue)) {
-        // Если фильтра нет, добавляем его в массив
         selectedFilters[field].push(filterValue);
-        console.log(`Добавлено: ${filterValue} в фильтр: ${field}`);  // Лог для проверки
     }
 }
 
 
 
 export function clearSelectedFilters(field, filterValue) {
-    // Проверка на наличие поля в объекте selectedFilters
-    if (!selectedFilters[field]) {
-        console.error(`Field ${field} does not exist in selectedFilters.`);
-        return;
-    }
-
-    // Находим индекс удаляемого значения
+    
+    // Find the index of the value to be deleted
     const index = selectedFilters[field].indexOf(filterValue);
 
-    // Проверим, что индекс фильтра найден
+    // Let's check that the filter index is found
     if (index > -1) {
-        // Удаляем элемент из массива фильтров
+        // Remove an element from the filters array
         selectedFilters[field].splice(index, 1);
     }
 }
@@ -163,7 +155,6 @@ function setupSearchInput(inputId, listId, clearInputId) {
     const list = document.getElementById(listId);
     const clearInput = document.getElementById(clearInputId);
 
-    // Добавляем обработчик события input
     searchInput.addEventListener('input', function () {
         const query = searchInput.value.toLowerCase();
         const listItems = list.querySelectorAll('li');
@@ -173,71 +164,62 @@ function setupSearchInput(inputId, listId, clearInputId) {
 
             let hasVisibleItems = false;
 
-            // Фильтруем элементы списка
             listItems.forEach(item => {
                 const itemText = item.textContent.toLowerCase();
                 const match = itemText.includes(query);
 
                 if (query.length >= 3) {
-                    // Показываем элемент, если он соответствует запросу
                     item.style.display = match ? '' : 'none';
                 } else {
-                    // Если запрос меньше 3 символов, показываем все элементы
                     item.style.display = '';
                 }
 
-                // Проверяем, есть ли видимые элементы
+                // Checking if there are visible elements
                 if (item.style.display !== 'none') {
                     hasVisibleItems = true;
                 }
             });
 
-            // Открываем дропдаун, если есть видимые элементы
+            // Open dropdown if there are visible elements
             list.style.display = hasVisibleItems ? 'block' : 'none';
         } else {
-            // Если запрос пустой, скрываем кнопку очистки и показываем все элементы
+            // If the request is empty, hide the clear button and show all elements
             clearInput.style.display = 'none';
             listItems.forEach(item => {
                 item.style.display = '';
             });
-            list.style.display = 'none'; // Скрываем дропдаун
+            list.style.display = 'none'; 
         }
     });
 }
 
-
-
-
-
-//Очистить значение поиска и показать все элементы списка, когда пользователь нажимает кнопку очистки.
+//Clear the search value and show all list items when the user clicks the clear button
 function setupClearButton(inputId, clearInputId) { 
     const searchInput = document.getElementById(inputId);
     const clearInput = document.getElementById(clearInputId);
 
     clearInput.addEventListener('click', function () {
-        // Очистка значения поиска
+       
         searchInput.value = '';
-        // Скрытие кнопки очистки
+        
         clearInput.style.display = 'none';
 
-        // Показ всех элементов списка
+        // Show all list items
         const list = document.getElementById(inputId.replace('-search', '-list'));
-        const listItems = Array.from(list.getElementsByTagName('li')); // Преобразуем коллекцию в массив
+        const listItems = Array.from(list.getElementsByTagName('li')); // Convert to an array
 
-        // Устанавливаем стиль display в '' для всех элементов списка
+        
         listItems.forEach(item => {
-            item.style.display = ''; // Показ всех элементов
+            item.style.display = ''; 
         });
 
-        // Применение фильтров к полному списку рецептов
-        let filteredResults = recipes; // Показать все рецепты
+        let filteredResults = recipes;
 
-        // Применяем дополнительные фильтры, если они установлены
+        // Apply additional filters if they are installed
         if (selectedFilters.ingredients.length || selectedFilters.appliance.length || selectedFilters.ustensils.length) {
             filteredResults = filterByAdditionalFilters(filteredResults);
         }
 
-        // Отображение всех рецептов с применением фильтров
         displayResults(filteredResults);
     });
 }
@@ -251,8 +233,7 @@ setupClearButton('appliance-search', 'clear-appliance');
 setupSearchInput('ustensils-search', 'ustensils-list', 'clear-ustensils');
 setupClearButton('ustensils-search', 'clear-ustensils');
 
-//создание кнопок выбранного элемента листа
-// Обновление выбранных фильтров при удалении элемента
+//create buttons of the selected sheet element
 function addSelectedItem(filterType, selectedItem) {
     const container = document.querySelector(`#${filterType}`).closest('.btn-conteiner');
     
@@ -263,8 +244,8 @@ function addSelectedItem(filterType, selectedItem) {
 
     const newItem = document.createElement('div');
     newItem.classList.add('selected_item');
-    // Вместо использования filterType напрямую, замените на корректное значение для selectedFilters
-    const filterField = filterType.replace('-btn', ''); // Заменяем '-btn' на пустую строку
+
+    const filterField = filterType.replace('-btn', ''); // Replace '-btn' with an empty string
 
     const uniqueId = `selected_${filterField}_${Date.now()}`;
     const paragraph = document.createElement('p');
@@ -283,7 +264,7 @@ function addSelectedItem(filterType, selectedItem) {
         newItem.remove();
 
         console.log(`Removing filter: ${filterField} - ${selectedItem}`);
-        clearSelectedFilters(filterField, selectedItem);  // Передаем правильное имя поля в selectedFilters
+        clearSelectedFilters(filterField, selectedItem);  
 
         console.log('Updated filters:', JSON.stringify(selectedFilters));
         
@@ -313,7 +294,7 @@ function addSelectedItem(filterType, selectedItem) {
 }
 
 
-// Function for setting up a click on a filter list КЛИК ПО Ингредиенту
+// Function for setting up a click on a filter list 
 function setupListClickListener(listId, selectedItemId, dropdownId, filterField, buttonId) {
     const listElement = document.getElementById(listId);
 
@@ -321,22 +302,21 @@ function setupListClickListener(listId, selectedItemId, dropdownId, filterField,
         if (event.target.tagName === 'LI') {
             const selectedItem = event.target.textContent.toLowerCase();
 
-            // Обновляем выбранные фильтры
+            // Updating selected filters
             updateSelectedFilters(filterField, selectedItem);
 
-            // Применяем фильтры к текущим отображаемым рецептам
+            // Apply filters to currently displayed recipes
             const query = searchInput.value.toLowerCase();
             let filteredRecipes = filterRecipes(query, recipes);
             filteredRecipes = filterByAdditionalFilters(filteredRecipes);
             displayResults(filteredRecipes);
 
-            // Добавляем элемент в список выбранных
+            // Add an item to the selected list
             addSelectedItem(buttonId, selectedItem);
             
-            // Скрываем выпадающий список
+            // Hide the drop-down list
             document.getElementById(dropdownId).style.display = 'none';
         
-             // После того, как рецепты отфильтрованы, обновляем списки дропдаунов:
             const ingredients = getRecipeData(filteredRecipes, recipe => recipe.ingredients.map(ing => ing.ingredient));
             createDropdownList(ingredients, 'ingredients-list', 'ingredients-btn', 'ingredients-dropdown', 'ingredients-arrow');
 
