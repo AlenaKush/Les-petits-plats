@@ -311,7 +311,17 @@ input[type="search"]::-webkit-search-cancel-button {
     font-family: 'Manrope', sans-serif;
     font-size: 14px;
     font-weight: 400;
- /*   display: flex;*/
     align-items: center;
     justify-content: space-between;
+}
+
+.no-results-message {
+    font-family: 'Anton', sans-serif;
+    font-size: 21px;
+    font-weight: 400;
+    color: #1B1B1B;
+    text-align: center;
+    margin: 0 0 50px 0;
+    grid-column: 2 / 3;
+    grid-row: 1;
 }

@@ -1,4 +1,6 @@
-//get data
+let dropdownsInitialized = false;  // Global variable to track initialization state
+
+// Get data from recipes
 export function getRecipeData(recipes, dataExtractor) {
     return recipes.reduce((data, recipe) => {
         const extractedData = dataExtractor(recipe);
@@ -6,13 +8,12 @@ export function getRecipeData(recipes, dataExtractor) {
     }, []);
 }
 
-
-//create elements of dropdown list
+// Create dropdown list elements
 export function createDropdownList(items, listElementId, dropdownBtnId, dropdownElementId, arrowIconId) {
-    const uniqueItems = [...new Set(items)];  // Convert Set back to array
-    const ulElement = document.getElementById(listElementId); // Reference to the list item
+    const uniqueItems = [...new Set(items)];  // Remove duplicate items
+    const ulElement = document.getElementById(listElementId);
 
-    ulElement.innerHTML = '';
+    ulElement.innerHTML = '';  // Clear the list before adding new elements
 
     uniqueItems.forEach(item => {
         const li = document.createElement('li');
@@ -20,40 +21,64 @@ export function createDropdownList(items, listElementId, dropdownBtnId, dropdown
         ulElement.appendChild(li);
     });
 
+    // Set up the dropdown list
     setupDropdown(dropdownBtnId, dropdownElementId, arrowIconId);
 }
 
-
-//manage visibility
-export function setupDropdown(dropdownBtnId, dropdownElementId, arrowIconId) {
+// Manage dropdown visibility (optimized version)
+function setupDropdown(dropdownBtnId, dropdownElementId, arrowIconId) {
     const dropdownBtn = document.getElementById(dropdownBtnId);
     const dropdownElement = document.getElementById(dropdownElementId);
     const arrowIcon = document.getElementById(arrowIconId);
 
-    dropdownBtn.addEventListener('click', function (event) {
-        event.stopPropagation();  //Prevent closing when clicking a button
-        
-        if (dropdownElement.style.display === 'none' || dropdownElement.style.display === '') {
-            dropdownElement.style.display = 'block';
-            arrowIcon.classList.remove('rotate');
-        } else {
-            dropdownElement.style.display = 'none';
-            arrowIcon.classList.add('rotate');
-        }
-    });
+    // Check if the event is already bound to the button
+    if (!dropdownBtn.dataset.listenerAdded) {
+        dropdownBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            toggleDropdown(dropdownElement, arrowIcon);
+        });
+        dropdownBtn.dataset.listenerAdded = 'true';
+    }
 
-    // Hide the dropdown when clicking outside its area
-    document.addEventListener('click', function (event) {
-        if (!dropdownElement.contains(event.target) && event.target !== dropdownBtn) {
-            dropdownElement.style.display = 'none';
-            arrowIcon.classList.add('rotate');
-        }
-    });
+    // Set up a global event handler for closing dropdowns on the first call
+    if (!dropdownsInitialized) {
+        document.addEventListener('click', (event) => {
+            closeAllDropdowns(event);
+        });
+        dropdownsInitialized = true;  // Set the initialization flag
+    }
 }
 
-//function to clear input fields and reset the list of elements
+// Toggle the dropdown menu (open/close)
+function toggleDropdown(dropdownElement, arrowIcon) {
+    const isDropdownOpen = dropdownElement.style.display === 'block';
+
+    // Close all other dropdowns before opening a new one
+    closeAllDropdowns();
+
+    // Change the current menu state
+    dropdownElement.style.display = isDropdownOpen ? 'none' : 'block';
+    arrowIcon.classList.toggle('rotate', !isDropdownOpen);
+}
+
+// Close all dropdown menus
+function closeAllDropdowns(event) {
+    const dropdowns = document.querySelectorAll('.dropdown-content');
+    const arrows = document.querySelectorAll('.rotate');
+
+    dropdowns.forEach(dropdown => {
+        if (!event || (dropdown !== event.target && !dropdown.contains(event.target))) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    // Reset all arrow icons
+    arrows.forEach(arrow => arrow.classList.remove('rotate'));
+}
+
+// Function to clear input fields and reset the list of items
 function setupClearInput() {
-    const clearIcons = document.querySelectorAll('.clear-input');  //Find all cleaning icons
+    const clearIcons = document.querySelectorAll('.clear-input');  // Find all clear icons
 
     clearIcons.forEach(icon => {
         icon.addEventListener('click', (event) => {
@@ -67,12 +92,12 @@ function setupClearInput() {
                 // Show all list items
                 const listItems = document.querySelectorAll(`#${dropdownId} li`);
                 listItems.forEach(item => {
-                    item.style.display = '';  // Show all list items
+                    item.style.display = '';  // Reset the visibility of items
                 });
             }
         });
     });
 }
 
+// Initialize the input fields clearing functionality
 setupClearInput();
-
