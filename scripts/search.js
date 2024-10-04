@@ -15,14 +15,14 @@ export let selectedFilters = {
 };
 
 // Display the list of recipes on the page
-export function displayResults(filteredRecipes) {
+export function displayResults(filteredRecipes, query) {
     searchResults.innerHTML = '';
     currentDisplayedRecipes = [];
 
     // If no recipes are found, display an error message
     if (filteredRecipes.length === 0) {
         const noResultsMessage = document.createElement('p');
-        noResultsMessage.textContent = 'Aucune recette trouvée.';
+        noResultsMessage.textContent = `Aucune recette ne contient ‘${query}’, vous pouvez chercher «tarte aux pommes», «poisson», etc.`;
         noResultsMessage.classList.add('no-results-message');
         searchResults.appendChild(noResultsMessage);
     } else {
@@ -50,7 +50,7 @@ function applyAllFilters() {
     filteredRecipes = filterByAdditionalFilters(filteredRecipes);
 
     currentDisplayedRecipes = filteredRecipes;
-    displayResults(filteredRecipes);
+    displayResults(filteredRecipes, queryMain);
     updateDropdowns(filteredRecipes);
 }
 
